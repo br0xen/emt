@@ -14,21 +14,41 @@ func main() {
 	initEmoticons()
 	// We default to "shrug"
 	emt := "¯\\_(ツ)_/¯"
-	if len(os.Args) > 1 {
+	var done bool
+	if len(os.Args) == 2 {
 		which := os.Args[1]
 		if which == "help" {
+			fmt.Println("There are a *ton* of emoji supported, to list them, do \"help-emoji\"")
 			for k, v := range emoticons {
 				fmt.Println(k, v)
 			}
 			os.Exit(0)
-		} else if which == "emoji" {
-			rest := strings.Join(os.Args[2:], " ")
-			emt = emoji.Sprint(rest)
+		} else if which == "help-emoji" {
+			allEmoji := emoji.CodeMap()
+			fmt.Println("== Supported Emoji ==")
+			for k, v := range allEmoji {
+				fmt.Println(k + " " + v)
+			}
+			os.Exit(0)
 		} else {
-			if i, ok := emoticons[which]; ok {
+			var i string
+			if i, done = emoticons[which]; done {
 				emt = i
 			}
 		}
+		if !done {
+			// it might be a one-word emoji request
+			tst1 := ":" + which + ":"
+			tst2 := emoji.Sprint(tst1)
+			if tst1 != tst2 {
+				emt = tst2
+				done = true
+			}
+		}
+	}
+	if !done {
+		rest := strings.Join(os.Args[1:], " ")
+		emt = emoji.Sprint(rest)
 	}
 	fmt.Println(emt)
 }
