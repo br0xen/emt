@@ -3,6 +3,9 @@ package main
 import (
 	"fmt"
 	"os"
+	"strings"
+
+	"github.com/kyokomi/emoji"
 )
 
 var emoticons map[string]string
@@ -13,12 +16,14 @@ func main() {
 	emt := "¯\\_(ツ)_/¯"
 	if len(os.Args) > 1 {
 		which := os.Args[1]
-		fmt.Println(which)
 		if which == "help" {
 			for k, v := range emoticons {
 				fmt.Println(k, v)
 			}
 			os.Exit(0)
+		} else if which == "emoji" {
+			rest := strings.Join(os.Args[2:], " ")
+			emt = emoji.Sprint(rest)
 		} else {
 			if i, ok := emoticons[which]; ok {
 				emt = i
