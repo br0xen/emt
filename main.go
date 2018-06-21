@@ -13,16 +13,12 @@ var emoticons map[string]string
 func main() {
 	initEmoticons()
 	// We default to "shrug"
-	emt := "¯\\_(ツ)_/¯"
 	var done bool
+	var which string
 	if len(os.Args) == 2 {
-		which := os.Args[1]
+		which = os.Args[1]
 		if which == "help" {
-			fmt.Println("There are a *ton* of emoji supported, to list them, do \"help-emoji\"")
-			for k, v := range emoticons {
-				fmt.Println(k, v)
-			}
-			os.Exit(0)
+			showHelp()
 		} else if which == "help-emoji" {
 			allEmoji := emoji.CodeMap()
 			fmt.Println("== Supported Emoji ==")
@@ -30,41 +26,62 @@ func main() {
 				fmt.Println(k + " " + v)
 			}
 			os.Exit(0)
-		} else {
-			var i string
-			if i, done = emoticons[which]; done {
-				emt = i
-			}
 		}
-		if !done {
-			// it might be a one-word emoji request
+		// it might be a one-word emoji request
+		allEmoji := emoji.CodeMap()
+		if _, done = allEmoji[which]; done {
 			tst1 := ":" + which + ":"
 			tst2 := emoji.Sprint(tst1)
 			if tst1 != tst2 {
-				emt = tst2
+				fmt.Println(tst2)
 				done = true
+			}
+		} else {
+			// Search for any emoji that contain this string
+			var cnt int
+			for k, v := range allEmoji {
+				if strings.Contains(k, which) {
+					fmt.Println(k + " " + v)
+					cnt++
+				}
+			}
+			if cnt > 0 {
+				done = true
+			} else {
+				fmt.Println("No emoji for " + which + " found.")
 			}
 		}
 	}
 	if !done {
-		rest := strings.Join(os.Args[1:], " ")
-		emt = emoji.Sprint(rest)
+		var i string
+		if i, done = emoticons[which]; done {
+			fmt.Println(i)
+		}
 	}
-	fmt.Println(emt)
+	if !done {
+		showHelp()
+	}
+}
+
+func showHelp() {
+	fmt.Println("There are a *ton* of emoji supported, to list them, do \"help-emoji\"")
+	for k, v := range emoticons {
+		fmt.Println(k, v)
+	}
+	os.Exit(0)
 }
 
 func initEmoticons() {
 	emoticons = make(map[string]string)
-	emoticons["bat"] = "～°·_·°～"
-	emoticons["bomb"] = "●～*"
-	emoticons["fish"] = ">°)))彡"
-	emoticons["flip"] = "(╯°□°）╯︵ ┻━┻"
-	emoticons["lenny"] = "( ͡° ͜ʖ ͡°)"
-	emoticons["octopus"] = "<コ:彡"
-	emoticons["shrug"] = "¯\\_(ツ)_/¯"
-	emoticons["smirk"] = "( ͡° ͜ʖ ͡°)"
-	emoticons["snake"] = "~>°)～～～"
-	emoticons["squid"] = "Ｃ:.ミ"
-	emoticons["star"] = "☆彡"
-	emoticons["tadpole"] = "(°°)～"
+	emoticons["ascii-bat"] = "～°·_·°～"
+	emoticons["ascii-bomb"] = "●～*"
+	emoticons["ascii-fish"] = ">°)))彡"
+	emoticons["ascii-flip"] = "(╯°□°）╯︵ ┻━┻"
+	emoticons["ascii-lenny"] = "( ͡° ͜ʖ ͡°)"
+	emoticons["ascii-octopus"] = "<コ:彡"
+	emoticons["ascii-shrug"] = "¯\\_(ツ)_/¯"
+	emoticons["ascii-smirk"] = "( ͡° ͜ʖ ͡°)"
+	emoticons["ascii-snake"] = "~>°)～～～"
+	emoticons["ascii-star"] = "☆彡"
+	emoticons["ascii-tadpole"] = "(°°)～"
 }
