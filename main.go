@@ -16,15 +16,19 @@ func main() {
 	var getApprox bool
 	var which string
 	var matchWhich string
+	allEmoji := emoji.CodeMap()
 	for _, v := range os.Args {
 		if v == "-a" {
 			getApprox = true
+		} else if v == "-completion-list" {
+			for k, _ := range allEmoji {
+				fmt.Print(strings.Trim(k, ":"), " ")
+			}
 		} else {
 			which = v
 		}
 	}
 
-	allEmoji := emoji.CodeMap()
 	if !strings.HasPrefix(which, ":") && !strings.HasSuffix(which, ":") {
 		matchWhich = ":" + which + ":"
 	}
